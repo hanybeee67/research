@@ -138,8 +138,8 @@ td .down { color: var(--verdi); font-weight: 700; }
 
 /* action list */
 .actions { counter-reset: act; display: grid; gap: 10px; }
-.actions li { list-style: none; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; background: #FAFBF9; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; }
-.actions li::before { counter-increment: act; content: counter(act); width: 28px; height: 28px; border-radius: 50%; background: var(--verdi); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+.actions li { list-style: none; display: flex; gap: 12px; align-items: flex-start; background: #FAFBF9; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; }
+.actions li::before { flex-shrink: 0; counter-increment: act; content: counter(act); width: 28px; height: 28px; border-radius: 50%; background: var(--verdi); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
 
 /* checklist */
 .check { display: grid; gap: 8px; }
