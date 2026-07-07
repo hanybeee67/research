@@ -1,0 +1,165 @@
+/* ============================================================
+   외식 리서치 랩 — 샘플 리포트 디자인 시스템
+   ------------------------------------------------------------
+   --ink       #1E242B  (charcoal — text, headers)
+   --paper     #F6F7F4  (page bg)
+   --verdi     #2E6E62  (verdigris — brand accent)
+   --verdi-d   #1F4F46
+   --stamp     #B3452F  (검수 스탬프 red)
+   --gold      #B98A2F  (highlight)
+   Type: Nanum Myeongjo(serif display) + Pretendard(body)
+   Signature: '현직 검수' 스탬프 + 판정(verdict) 바 — 모든 리포트가
+   숫자 나열이 아니라 "현직자의 판단"으로 끝난다는 것을 형태로 보여줌.
+   ============================================================ */
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/pretendard/1.3.9/static/pretendard.min.css');
+
+:root {
+  --ink: #1E242B;
+  --ink-soft: #5A6470;
+  --paper: #F6F7F4;
+  --card: #FFFFFF;
+  --verdi: #2E6E62;
+  --verdi-d: #1F4F46;
+  --verdi-tint: #E4EEEB;
+  --stamp: #B3452F;
+  --gold: #B98A2F;
+  --gold-tint: #F5EBD7;
+  --line: #DDE2DC;
+  --radius: 12px;
+  --shadow: 0 8px 26px rgba(30, 36, 43, 0.08);
+  --serif: 'Nanum Myeongjo', 'Gowun Batang', serif;
+  --sans: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.65; font-size: 16px; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- header ---------- */
+.site-head { background: var(--ink); color: #E9ECE7; position: sticky; top: 0; z-index: 40; }
+.site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand-name { font-family: var(--serif); font-weight: 800; font-size: 1.15rem; letter-spacing: 0.02em; }
+.brand-name em { font-style: normal; color: #7FC0B2; }
+.brand-tag { font-size: 0.68rem; color: #9AA5A0; letter-spacing: 0.06em; }
+.sample-badge { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.1em; background: var(--gold); color: var(--ink); padding: 4px 10px; border-radius: 999px; }
+
+/* ---------- hub (index) ---------- */
+.hub-hero { padding: 60px 0 40px; }
+.hub-kicker { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.16em; color: var(--verdi); margin-bottom: 14px; }
+.hub-hero h1 { font-family: var(--serif); font-size: clamp(1.7rem, 4.5vw, 2.5rem); line-height: 1.35; max-width: 24ch; }
+.hub-hero p { margin-top: 16px; color: var(--ink-soft); max-width: 56ch; font-size: 0.98rem; }
+.hub-grid { display: grid; gap: 18px; padding: 10px 0 70px; }
+@media (min-width: 760px) { .hub-grid { grid-template-columns: repeat(3, 1fr); } }
+.hub-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 24px; display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.15s;
+}
+.hub-card:hover { transform: translateY(-3px); }
+.hub-card .no { font-family: var(--serif); font-size: 0.8rem; font-weight: 800; color: var(--verdi); letter-spacing: 0.12em; }
+.hub-card h3 { font-family: var(--serif); font-size: 1.18rem; line-height: 1.4; }
+.hub-card p { font-size: 0.86rem; color: var(--ink-soft); flex: 1; }
+.hub-card .price { font-weight: 800; color: var(--verdi-d); font-size: 0.9rem; }
+.hub-card .go { font-weight: 700; font-size: 0.86rem; color: var(--verdi); }
+.hub-card .go::after { content: " →"; }
+
+/* ---------- report page ---------- */
+.report { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); margin: 34px auto 70px; overflow: hidden; }
+
+.report-cover { position: relative; padding: 42px 40px 34px; border-bottom: 3px solid var(--ink); }
+@media (max-width: 640px) { .report-cover { padding: 30px 22px 26px; } }
+.report-type { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; color: var(--verdi); margin-bottom: 12px; }
+.report-cover h1 { font-family: var(--serif); font-size: clamp(1.45rem, 4vw, 2.05rem); line-height: 1.4; max-width: 26ch; }
+.report-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 16px; font-size: 0.78rem; color: var(--ink-soft); }
+.report-meta b { color: var(--ink); }
+
+/* 검수 스탬프 — signature element */
+.stamp {
+  position: absolute; right: 34px; top: 34px; width: 92px; height: 92px;
+  border: 3px double var(--stamp); border-radius: 50%; color: var(--stamp);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transform: rotate(-8deg); font-weight: 800; text-align: center; line-height: 1.25;
+  font-size: 0.66rem; letter-spacing: 0.08em; opacity: 0.9; background: rgba(179, 69, 47, 0.03);
+}
+.stamp b { font-size: 0.86rem; letter-spacing: 0.12em; }
+@media (max-width: 640px) { .stamp { width: 74px; height: 74px; right: 18px; top: 18px; font-size: 0.56rem; } .stamp b { font-size: 0.72rem; } }
+
+.report-body { padding: 34px 40px 44px; }
+@media (max-width: 640px) { .report-body { padding: 26px 20px 34px; } }
+
+.sec { margin-bottom: 34px; }
+.sec-title { display: flex; align-items: baseline; gap: 10px; font-family: var(--serif); font-size: 1.15rem; font-weight: 800; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.sec-title .n { color: var(--verdi); font-size: 0.85rem; letter-spacing: 0.08em; }
+.sec p { font-size: 0.92rem; margin-bottom: 10px; }
+.sec p.small { font-size: 0.8rem; color: var(--ink-soft); }
+
+/* summary box */
+.summary {
+  background: var(--verdi-tint); border-left: 4px solid var(--verdi);
+  border-radius: 0 10px 10px 0; padding: 18px 20px; margin-bottom: 30px;
+}
+.summary .label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; color: var(--verdi-d); margin-bottom: 8px; }
+.summary p { font-size: 0.95rem; font-weight: 600; line-height: 1.7; }
+
+/* data table — mobile: horizontal scroll */
+.tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 6px 0 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.85rem; }
+th { background: var(--ink); color: #fff; font-weight: 700; padding: 10px 12px; text-align: left; white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:nth-child(even) td { background: #FAFBF9; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td .up { color: var(--stamp); font-weight: 700; }
+td .down { color: var(--verdi); font-weight: 700; }
+.tbl-note { font-size: 0.74rem; color: var(--ink-soft); }
+
+/* verdict bar */
+.verdict { display: grid; grid-template-columns: 120px 1fr; border: 1.5px solid var(--ink); border-radius: 10px; overflow: hidden; margin: 14px 0; }
+@media (max-width: 560px) { .verdict { grid-template-columns: 1fr; } }
+.verdict .v-label { background: var(--ink); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 12px; font-size: 0.9rem; letter-spacing: 0.06em; }
+.verdict .v-body { padding: 14px 18px; font-size: 0.92rem; font-weight: 600; }
+.verdict.good .v-label { background: var(--verdi); }
+.verdict.warn .v-label { background: var(--gold); color: var(--ink); }
+.verdict.bad .v-label { background: var(--stamp); }
+
+/* chef-review note */
+.review-note { background: var(--gold-tint); border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+.review-note .who { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+.review-note p { font-size: 0.88rem; }
+
+/* action list */
+.actions { counter-reset: act; display: grid; gap: 10px; }
+.actions li { list-style: none; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; background: #FAFBF9; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; }
+.actions li::before { counter-increment: act; content: counter(act); width: 28px; height: 28px; border-radius: 50%; background: var(--verdi); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+
+/* checklist */
+.check { display: grid; gap: 8px; }
+.check li { list-style: none; display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 0.9rem; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.check li::before { content: "☐"; color: var(--verdi); font-weight: 800; font-size: 1rem; }
+
+/* timeline */
+.timeline { display: grid; gap: 0; }
+.tl-step { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+@media (max-width: 560px) { .tl-step { grid-template-columns: 90px 1fr; } }
+.tl-when { font-weight: 800; color: var(--verdi-d); font-size: 0.84rem; }
+.tl-what h4 { font-size: 0.94rem; margin-bottom: 3px; }
+.tl-what p { font-size: 0.84rem; color: var(--ink-soft); margin: 0; }
+
+/* footer of report */
+.report-foot { border-top: 3px solid var(--ink); padding: 20px 40px 26px; font-size: 0.74rem; color: var(--ink-soft); line-height: 1.7; background: #FAFBF9; }
+@media (max-width: 640px) { .report-foot { padding: 18px 20px 24px; } }
+
+.back-link { display: inline-block; margin: 0 0 40px; font-weight: 700; color: var(--verdi); font-size: 0.88rem; }
+.back-link::before { content: "← "; }
+
+.site-foot { background: var(--ink); color: #9AA5A0; padding: 28px 0; font-size: 0.76rem; }
+.site-foot b { color: #E9ECE7; font-family: var(--serif); }
