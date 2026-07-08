@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>향신료 기억력 게임</title>
+    <style>
+        :root {
+            --bg-color: #fdfbf7;
+            --primary-color: #e65100;
+            --secondary-color: #ffb300;
+            --text-color: #3e2723;
+            --card-back: #ffcc80;
+            --card-front: #ffffff;
+            --board-gap: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        header {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .best-score {
+            font-size: 0.75rem;
+            color: #795548;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: var(--board-gap);
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 2 / 3.2;
+            perspective: 1000px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card.flipped, .card.matched {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-size: 200% 200%;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-front {
+            background-color: var(--card-front);
+            transform: rotateY(180deg);
+            border: 2px solid var(--secondary-color);
+            font-size: 2rem;
+        }
+
+        .card-name {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            font-weight: bold;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(253, 251, 247, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .result-box {
+            background: white;
+            padding: 32px 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        .result-box h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .result-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .trivia-box {
+            background: #fff8e1;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #5d4037;
+            position: relative;
+        }
+        
+        .trivia-box::before {
+            content: '💡 향신료 상식';
+            display: block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 0 #b73e00;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .ad-space {
+            width: 100%;
+            max-width: 500px;
+            height: 60px;
+            background: #e0e0e0;
+            color: #9e9e9e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            border: 1px dashed #bdbdbd;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>인도·네팔 향신료 짝맞추기</h1>
+        <div class="stats">
+            <div id="time-display">00:00</div>
+            <div class="best-score">최고 기록: <span id="best-display">-</span></div>
+        </div>
+    </header>
+
+    <div class="game-board" id="board"></div>
+
+    <div class="ad-space">
+        <!-- 이곳에 구글 애드센스 등 배너 광고 코드를 삽입하세요 -->
+        광고 배너 영역 (320x50 또는 반응형)
+    </div>
+
+    <!-- 게임 종료 팝업 -->
+    <div class="overlay" id="end-screen">
+        <div class="result-box">
+            <h2>게임 완료! 🎉</h2>
+            <div class="result-time" id="final-time">기록: 00:00</div>
+            
+            <div class="trivia-box" id="trivia-text">
+                <!-- 상식 문장이 이곳에 나타납니다 -->
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="initGame()">다시 하기</button>
+                <button class="btn btn-secondary" onclick="goToCurryWiki()">커리백과 보러가기</button>
+            </div>
+            
+            <div class="ad-space" style="margin-top: 24px; border-radius: 8px;">
+                <!-- 팝업 내 광고 코드 삽입 영역 -->
+                종료 화면 광고 영역
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const spices = [
+            { id: 1, emoji: '🌶️', name: '칠리' },
+            { id: 2, emoji: '🧄', name: '마늘' },
+            { id: 3, emoji: '🧅', name: '양파' },
+            { id: 4, emoji: '🌿', name: '고수' },
+            { id: 5, emoji: '🫚', name: '생강' },
+            { id: 6, emoji: '🌼', name: '사프란' },
+            { id: 7, emoji: '🟡', name: '강황' },
+            { id: 8, emoji: '🪵', name: '계피' },
+            { id: 9, emoji: '🌱', name: '큐민' },
+            { id: 10, emoji: '🫘', name: '넛맥' },
+            { id: 11, emoji: '🍃', name: '카다몸' },
+            { id: 12, emoji: '🖤', name: '후추' }
+        ];
+
+        // !!! 유저님이 작성해주실 향신료 상식 12개 !!!
+        const triviaSentences = [
+            "1. (칠리) 여기에 첫 번째 상식을 적어주세요.",
+            "2. (마늘) 여기에 두 번째 상식을 적어주세요.",
+            "3. (양파) 여기에 세 번째 상식을 적어주세요.",
+            "4. (고수) 여기에 네 번째 상식을 적어주세요.",
+            "5. (생강) 여기에 다섯 번째 상식을 적어주세요.",
+            "6. (사프란) 여기에 여섯 번째 상식을 적어주세요.",
+            "7. (강황) 여기에 일곱 번째 상식을 적어주세요.",
+            "8. (계피) 여기에 여덟 번째 상식을 적어주세요.",
+            "9. (큐민) 여기에 아홉 번째 상식을 적어주세요.",
+            "10. (넛맥) 여기에 열 번째 상식을 적어주세요.",
+            "11. (카다몸) 여기에 열한 번째 상식을 적어주세요.",
+            "12. (후추) 여기에 열두 번째 상식을 적어주세요."
+        ];
+
+        const board = document.getElementById('board');
+        const timeDisplay = document.getElementById('time-display');
+        const bestDisplay = document.getElementById('best-display');
+        const endScreen = document.getElementById('end-screen');
+        const finalTime = document.getElementById('final-time');
+        const triviaText = document.getElementById('trivia-text');
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let lockBoard = false;
+        let timer = null;
+        let seconds = 0;
+
+        let bestScore = localStorage.getItem('spiceGameBestScore');
+        if(bestScore) {
+            bestDisplay.textContent = formatTime(parseInt(bestScore));
+        }
+
+        function initGame() {
+            board.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            lockBoard = false;
+            seconds = 0;
+            timeDisplay.textContent = '00:00';
+            endScreen.classList.remove('active');
+            clearInterval(timer);
+
+            let deck = [...spices, ...spices];
+            deck.sort(() => Math.random() - 0.5);
+
+            deck.forEach((spice) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = spice.id;
+                
+                card.innerHTML = `
+                    <div class="card-face card-front">
+                        <div style="font-size: 2rem;">${spice.emoji}</div>
+                        <div class="card-name">${spice.name}</div>
+                    </div>
+                    <div class="card-face card-back">?</div>
+                `;
+                
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+                cards.push(card);
+            });
+
+            timer = setInterval(() => {
+                seconds++;
+                timeDisplay.textContent = formatTime(seconds);
+            }, 1000);
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === flippedCards[0]) return;
+            if (this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            let isMatch = flippedCards[0].dataset.id === flippedCards[1].dataset.id;
+            if (isMatch) disableCards();
+            else unflipCards();
+        }
+
+        function disableCards() {
+            flippedCards[0].classList.add('matched');
+            flippedCards[1].classList.add('matched');
+            
+            flippedCards = [];
+            matchedPairs++;
+
+            if (matchedPairs === spices.length) {
+                gameOver();
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                flippedCards[0].classList.remove('flipped');
+                flippedCards[1].classList.remove('flipped');
+                flippedCards = [];
+                lockBoard = false;
+            }, 800);
+        }
+
+        function gameOver() {
+            clearInterval(timer);
+            
+            if (!bestScore || seconds < parseInt(bestScore)) {
+                bestScore = seconds;
+                localStorage.setItem('spiceGameBestScore', seconds);
+                bestDisplay.textContent = formatTime(seconds);
+            }
+
+            finalTime.textContent = '완료 시간: ' + formatTime(seconds);
+            
+            const randomTrivia = triviaSentences[Math.floor(Math.random() * triviaSentences.length)];
+            triviaText.innerHTML = randomTrivia;
+
+            setTimeout(() => {
+                endScreen.classList.add('active');
+            }, 500);
+        }
+
+        function formatTime(sec) {
+            let m = Math.floor(sec / 60).toString().padStart(2, '0');
+            let s = (sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function goToCurryWiki() {
+            // 커리백과 링크로 이동 설정
+            // window.location.href = "https://링크를_여기에_입력하세요";
+            alert("커리백과 페이지로 이동하는 링크를 스크립트 goToCurryWiki() 함수 안에 넣어주세요!");
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
